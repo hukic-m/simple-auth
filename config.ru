@@ -2,11 +2,6 @@ require 'roda'
 require 'dotenv'
 Dotenv.load
 
-require_relative './db'
-require_relative './models/account'
-require_relative './models/role'
-require_relative './models/permission'
-
 class App < Roda
   plugin :json
 

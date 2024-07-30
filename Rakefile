@@ -1,7 +1,5 @@
 require 'sequel'
 require 'dotenv/load'
-require 'byebug'
-# require_relative './db'
 
 desc 'Setup the database'
 task :setup_db do

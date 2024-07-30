@@ -1,0 +1,15 @@
+# Disable documentation requirement for classes and modules
+Style/Documentation:
+  Enabled: false
+
+# Disable the frozen string literal comment requirement
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Enforce single quotes for string literals
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+# Set maximum method length to 50 lines
+Metrics/MethodLength:
+  Max: 50

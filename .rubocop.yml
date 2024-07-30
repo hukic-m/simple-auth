@@ -13,3 +13,6 @@ Style/StringLiterals:
 # Set maximum method length to 50 lines
 Metrics/MethodLength:
   Max: 50
+
+Metrics/BlockLength:
+  Enabled: false

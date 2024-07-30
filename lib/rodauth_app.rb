@@ -9,15 +9,5 @@ class RodauthApp < Rodauth::Auth
     expired_jwt_access_token_status { 401 }
     jwt_access_token_period { 360 }
     hmac_secret ENV['JWT_SECRET']
-
-    jwt_session_hash do
-      whole_account = Account[account_id]
-      super().merge(
-        {
-          'scopes' => whole_account.roles.map(&:name),
-          'permissions' => whole_account.scopes
-        }
-      )
-    end
   end
 end

@@ -2,7 +2,7 @@ require 'dotenv/load'
 require 'sequel'
 
 env = ENV['RACK_ENV'] || 'development'
-db_url = ENV["DATABASE_URL_#{env.upcase}"]
+db_url = ENV["DATABASE_URL_#{env.upcase}"] || ENV['DATABASE_URL']
 
 DB = Sequel.connect(db_url)
 

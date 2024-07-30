@@ -15,7 +15,7 @@ namespace :db do
 
     ENV['RACK_ENV'] = env
 
-    require_relative './db'
+    require_relative './lib/db'
 
     migrate = lambda do |_env, version|
       require 'logger'

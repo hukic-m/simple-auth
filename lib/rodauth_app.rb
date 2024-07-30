@@ -5,7 +5,7 @@ class RodauthApp < Rodauth::Auth
     enable :login, :logout, :create_account, :jwt, :json, :internal_request, :jwt_refresh, :active_sessions
     jwt_secret ENV['JWT_SECRET']
     only_json? true
-    account_password_hash_column :password_hash
+
     expired_jwt_access_token_status { 401 }
     jwt_access_token_period { 360 }
     hmac_secret ENV['JWT_SECRET']

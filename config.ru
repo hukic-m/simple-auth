@@ -1,7 +1,6 @@
 require 'roda'
 require 'dotenv'
 Dotenv.load
-
 class App < Roda
   plugin :json
 

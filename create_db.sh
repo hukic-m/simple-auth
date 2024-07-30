@@ -2,11 +2,6 @@
 
 set -e
 
-# Load environment variables from .env file
-if [ -f .env ]; then
-  export $(cat .env | xargs)
-fi
-
 # Function to create a database if it doesn't exist
 create_db() {
   local dbname=$1

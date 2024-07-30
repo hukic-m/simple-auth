@@ -1,5 +1,5 @@
 require 'dotenv/load'
-require 'sequel/core'
+require 'sequel'
 
 env = ENV['RACK_ENV'] || 'development'
 db_url = ENV["DATABASE_URL_#{env.upcase}"]

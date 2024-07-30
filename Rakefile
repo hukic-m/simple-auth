@@ -6,15 +6,6 @@ task :setup_db do
   sh 'bash setup_db.sh'
 end
 
-desc 'Setup the database'
-task :setup_db do
-  sh 'bash setup_db.sh'
-end
-
-desc 'Setup the database'
-task :setup_db do
-  sh 'bash setup_db.sh'
-end
 
 namespace :db do
   desc 'Migrate the database'

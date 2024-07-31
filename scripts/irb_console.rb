@@ -6,7 +6,7 @@ require 'dotenv'
 Dotenv.load
 
 # Require your application files
-require_relative '../lib/database'
+require_relative '../lib/db'
 require_relative '../models/account'
 require_relative '../models/role'
 require_relative '../models/permission'

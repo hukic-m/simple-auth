@@ -7,6 +7,6 @@ class NewRole < Dry::Validation::Contract
   end
 
   rule(:name) do
-    key.failure('must be unique') unless Role.where(name: value).first.empty
+    key.failure('must be unique') unless Role.where(name: value).first.nil?
   end
 end

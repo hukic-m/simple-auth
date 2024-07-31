@@ -3,6 +3,7 @@ require 'roda'
 require 'rack/test'
 require_relative '../../routes/roles_routes'
 require 'json'
+require 'byebug'
 
 RSpec.describe RolesRoutes do
   include Rack::Test::Methods
@@ -95,6 +96,48 @@ RSpec.describe RolesRoutes do
     context 'when the role does not exist' do
       it 'returns 404' do
         delete '/roles/999999'
+        expect(last_response.status).to eq(404)
+      end
+    end
+  end
+
+  describe 'PATCH /roles/:id' do
+    context 'when the role exists' do
+      let(:role_id) { TEST_DB[:roles].insert(name: 'Role1', description: 'Role1') }
+
+      context 'with valid name param' do
+        let(:valid_params) { { role: { name: 'Role1Update' } }.to_json }
+
+        it 'updates the role' do
+          patch "/roles/#{role_id}", valid_params, json_headers
+          expect(last_response.status).to eq(200)
+          expect(json_response['data']['name']).to eq('Role1Update')
+        end
+      end
+
+      context 'with valid description param and name not changed' do
+        let(:valid_params) { { role: { description: 'Role1DescUpdate' } }.to_json }
+
+        it 'updates the role' do
+          patch "/roles/#{role_id}", valid_params, json_headers
+          expect(last_response.status).to eq(200)
+          expect(json_response['data']['description']).to eq('Role1DescUpdate')
+        end
+      end
+
+      context 'with invalid params' do
+        let(:invalid_params) { { role: { name: '' } }.to_json }
+
+        it 'returns errors' do
+          patch "/roles/#{role_id}", invalid_params, json_headers
+          expect(last_response.status).to eq(422)
+        end
+      end
+    end
+
+    context 'when the role does not exist' do
+      it 'returns 404' do
+        patch '/roles/999999', '{}', json_headers
         expect(last_response.status).to eq(404)
       end
     end

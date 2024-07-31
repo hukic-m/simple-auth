@@ -2,6 +2,7 @@ require_relative '../models/role'
 require_relative '../lib/rodauth_app'
 require_relative '../validations/new_role'
 
+# Routes for managing roles in the application
 class RolesRoutes < Roda
   plugin :rodauth, json: true, auth_class: RodauthApp
   plugin :all_verbs
@@ -33,11 +34,17 @@ class RolesRoutes < Roda
 
   private
 
+  # Handles listing all roles
+  #
+  # @return [Hash] The list of roles
   def handle_list_roles
     roles = Role.all
     { data: roles.map(&:to_hash) }
   end
 
+  # Handles creating a new role
+  #
+  # @return [Hash] The created role or errors
   def handle_create_role
     symbolized_params = JSON.parse(request.body.read, symbolize_names: true)
     contract = NewRole.new
@@ -53,10 +60,18 @@ class RolesRoutes < Roda
     end
   end
 
+  # Handles showing a specific role
+  #
+  # @param role [Role] The role to show
+  # @return [Hash] The role data
   def handle_show_role(role)
     { data: role.to_hash }
   end
 
+  # Handles updating an existing role
+  #
+  # @param role [Role] The role to update
+  # @return [Hash] The updated role or errors
   def handle_update_role(role)
     symbolized_params = JSON.parse(request.body.read, symbolize_names: true)[:role]
     contract = NewRole.new(operation: :update, current_role_id: role.id)
@@ -73,6 +88,10 @@ class RolesRoutes < Roda
     end
   end
 
+  # Handles deleting a specific role
+  #
+  # @param role [Role] The role to delete
+  # @return [Hash] A success message or errors
   def handle_delete_role(role)
     if role.destroy
       response.status = 200

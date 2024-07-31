@@ -5,17 +5,19 @@ source 'https://rubygems.org'
 gem 'bcrypt'
 
 gem 'dotenv'
+gem 'dry-validation'
 gem 'jwt'
 gem 'pg'
 gem 'rack'
 gem 'rackup'
-gem 'roda'
 gem 'rake'
+gem 'roda'
 gem 'rodauth'
 gem 'sequel'
 gem 'tilt'
 
 group :development do
+  gem 'annotate'
   gem 'byebug'
   gem 'rubocop'
 end

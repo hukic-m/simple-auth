@@ -5,57 +5,81 @@ require_relative '../validations/new_role'
 class RolesRoutes < Roda
   plugin :rodauth, json: true, auth_class: RodauthApp
   plugin :all_verbs
-  new_role = NewRole.new(update_method: false)
 
   route do |r|
     rodauth.require_authentication
 
     r.on 'roles' do
-      # Handle routes with an integer ID first to avoid conflicts
+      r.is do
+        r.get { handle_list_roles }
+        r.post { handle_create_role }
+      end
+
       r.on Integer do |id|
         role = Role[id]
-
         unless role
           response.status = 404
           next { errors: { role: 'not found' } }
         end
 
-        # GET api/v1/roles/:id
-        r.get do
-          { data: role.to_hash }
-        end
-
-        # DELETE api/v1/roles/:id
-        r.delete do
-          if role.destroy
-            response.status = 200
-            { message: 'Role deleted' }
-          else
-            response.status = 422
-            { errors: { message: 'Failed to delete role' } }
-          end
+        r.is do
+          r.get { handle_show_role(role) }
+          r.patch { handle_update_role(role) }
+          r.delete { handle_delete_role(role) }
         end
       end
+    end
+  end
 
-      # GET api/v1/roles
-      r.get do
-        roles = Role.all
-        { data: roles.map(&:to_hash) }
-      end
+  private
 
-      r.post do
-        symbolized_params = JSON.parse(request.body.read, symbolize_names: true)
-        valid_role = new_role.call(symbolized_params[:role])
+  def handle_list_roles
+    roles = Role.all
+    { data: roles.map(&:to_hash) }
+  end
 
-        if valid_role.success?
-          role = Role.create(valid_role.to_h)
-          response.status = 201
-          { data: role.to_hash }
-        else
-          response.status = 422
-          { errors: valid_role.errors.to_h }
-        end
-      end
+  def handle_create_role
+    symbolized_params = JSON.parse(request.body.read, symbolize_names: true)
+    contract = NewRole.new
+    result = contract.call(symbolized_params[:role])
+
+    if result.success?
+      role = Role.create(result.to_h)
+      response.status = 201
+      { data: role.to_hash }
+    else
+      response.status = 422
+      { errors: result.errors.to_h }
+    end
+  end
+
+  def handle_show_role(role)
+    { data: role.to_hash }
+  end
+
+  def handle_update_role(role)
+    symbolized_params = JSON.parse(request.body.read, symbolize_names: true)[:role]
+    contract = NewRole.new(operation: :update, current_role_id: role.id)
+    current_params = role.values.merge(symbolized_params)
+    result = contract.call(current_params)
+
+    if result.success?
+      role.update(result.to_h)
+      response.status = 200
+      { data: role.to_hash }
+    else
+      response.status = 422
+      { errors: result.errors.to_h }
+    end
+  end
+
+  def handle_delete_role(role)
+    if role.destroy
+      response.status = 200
+      { message: 'Role deleted' }
+    else
+      response.status = 422
+      { errors: { message: 'Failed to delete role' } }
     end
   end
 end

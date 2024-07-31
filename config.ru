@@ -1,6 +1,7 @@
 require 'roda'
 require_relative './lib/db'
 require_relative './routes/rodauth_routes'
+require_relative './routes/roles_routes'
 require_relative './models/account'
 require_relative './models/role'
 require_relative './models/permission'
@@ -12,6 +13,12 @@ class App < Roda
   route do |r|
     r.on 'auth' do
       r.run RodauthRoutes
+    end
+
+    r.on 'api' do
+      r.on 'v1' do
+        r.run RolesRoutes
+      end
     end
 
     r.root do

@@ -21,3 +21,9 @@ group :development do
   gem 'byebug'
   gem 'rubocop'
 end
+
+group :test do
+  gem 'rspec'
+  gem 'rack-test'
+  gem 'database_cleaner-sequel'
+end

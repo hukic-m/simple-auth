@@ -27,6 +27,11 @@ GEM
     byebug (11.1.3)
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
+    database_cleaner-core (2.0.1)
+    database_cleaner-sequel (2.0.2)
+      database_cleaner-core (~> 2.0.0)
+      sequel
+    diff-lcs (1.5.1)
     dotenv (2.8.1)
     drb (2.2.1)
     dry-configurable (1.2.0)
@@ -76,6 +81,8 @@ GEM
     pg (1.5.4)
     racc (1.7.3)
     rack (3.0.10)
+    rack-test (2.1.0)
+      rack (>= 1.3)
     rackup (2.1.0)
       rack (>= 3)
       webrick (~> 1.8)
@@ -88,6 +95,19 @@ GEM
     rodauth (2.36.0)
       roda (>= 2.6.0)
       sequel (>= 4)
+    rspec (3.13.0)
+      rspec-core (~> 3.13.0)
+      rspec-expectations (~> 3.13.0)
+      rspec-mocks (~> 3.13.0)
+    rspec-core (3.13.0)
+      rspec-support (~> 3.13.0)
+    rspec-expectations (3.13.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-mocks (3.13.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.13.0)
+    rspec-support (3.13.1)
     rubocop (1.60.2)
       json (~> 2.3)
       language_server-protocol (>= 3.17.0)
@@ -120,15 +140,18 @@ DEPENDENCIES
   annotate
   bcrypt
   byebug
+  database_cleaner-sequel
   dotenv
   dry-validation
   jwt
   pg
   rack
+  rack-test
   rackup
   rake
   roda
   rodauth
+  rspec
   rubocop
   sequel
   tilt

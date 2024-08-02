@@ -3,7 +3,6 @@ require 'roda'
 require 'rack/test'
 require_relative '../../routes/roles_routes'
 require 'json'
-require 'byebug'
 
 RSpec.describe RolesRoutes do
   include Rack::Test::Methods

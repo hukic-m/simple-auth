@@ -9,8 +9,6 @@ require 'rake'
 require 'dotenv'
 Dotenv.load
 
-system('sh ./scripts/db_setup.sh')
-
 Rake.application.init
 Rake.application.load_rakefile
 

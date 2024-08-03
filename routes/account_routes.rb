@@ -1,7 +1,6 @@
 require_relative '../models/account'
 require_relative '../lib/rodauth_app'
 require 'json'
-require 'byebug'
 
 class AccountRoutes < Roda
   plugin :rodauth, json: true, auth_class: RodauthApp

@@ -10,24 +10,27 @@ class RolesRoutes < Roda
   route do |r|
     rodauth.require_authentication
 
-    r.on 'roles' do
-      r.is do
-        r.get { handle_list_roles }
-        r.post { handle_create_role }
+    r.is do
+      # route: GET /api/v1/roles
+      r.get { handle_list_roles }
+      # route: POST /api/v1/roles
+      r.post { handle_create_role }
+    end
+
+    r.on Integer do |id|
+      role = Role[id]
+      unless role
+        response.status = 404
+        next { errors: { role: 'not found' } }
       end
 
-      r.on Integer do |id|
-        role = Role[id]
-        unless role
-          response.status = 404
-          next { errors: { role: 'not found' } }
-        end
-
-        r.is do
-          r.get { handle_show_role(role) }
-          r.patch { handle_update_role(role) }
-          r.delete { handle_delete_role(role) }
-        end
+      r.is do
+        # route: GET /api/v1/roles/:id
+        r.get { handle_show_role(role) }
+        # route: PATCH /api/v1/roles/:id
+        r.patch { handle_update_role(role) }
+        # route: DELETE /api/v1/roles/:id
+        r.delete { handle_delete_role(role) }
       end
     end
   end

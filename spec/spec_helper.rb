@@ -1,6 +1,7 @@
 require 'rspec'
 require 'sequel'
 require 'dotenv'
+require 'rack/test'
 Dotenv.load('.env.test')
 
 # Set up the test database

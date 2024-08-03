@@ -92,6 +92,8 @@ GEM
     rexml (3.2.6)
     roda (3.76.0)
       rack
+    roda-route_list (2.1.0)
+      roda
     rodauth (2.36.0)
       roda (>= 2.6.0)
       sequel (>= 4)
@@ -150,6 +152,7 @@ DEPENDENCIES
   rackup
   rake
   roda
+  roda-route_list
   rodauth
   rspec
   rubocop

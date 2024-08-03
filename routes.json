@@ -1,0 +1,7 @@
+[
+  { "path": "/api/v1/roles", "methods": ["GET"] },
+  { "path": "/api/v1/roles", "methods": ["POST"] },
+  { "path": "/api/v1/roles/:id", "methods": ["GET"] },
+  { "path": "/api/v1/roles/:id", "methods": ["PATCH"] },
+  { "path": "/api/v1/roles/:id", "methods": ["DELETE"] }
+]

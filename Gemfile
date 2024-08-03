@@ -12,6 +12,7 @@ gem 'rack'
 gem 'rackup'
 gem 'rake'
 gem 'roda'
+gem 'roda-route_list'
 gem 'rodauth'
 gem 'sequel'
 gem 'tilt'
@@ -23,7 +24,7 @@ group :development do
 end
 
 group :test do
-  gem 'rspec'
-  gem 'rack-test'
   gem 'database_cleaner-sequel'
+  gem 'rack-test'
+  gem 'rspec'
 end

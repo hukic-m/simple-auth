@@ -6,7 +6,6 @@ task :setup_db do
   sh 'bash setup_db.sh'
 end
 
-
 namespace :db do
   desc 'Migrate the database'
   task :migrate, [:env, :version] do |_t, args|

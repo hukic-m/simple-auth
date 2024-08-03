@@ -19,6 +19,7 @@ RSpec.describe RolesRoutes do
 
   before(:each) do
     TEST_DB[:roles].delete
+    TEST_DB[:permissions].delete
   end
 
   def json_response
@@ -136,6 +137,115 @@ RSpec.describe RolesRoutes do
     context 'when the role does not exist' do
       it 'returns 404' do
         patch '/api/v1/roles/999999', '{}', json_headers
+        expect(last_response.status).to eq(404)
+      end
+    end
+  end
+
+  describe 'GET /api/v1/roles/:id/permissions' do
+    context 'when the role exists' do
+      let(:role_id) { TEST_DB[:roles].insert(name: 'Role with Permissions') }
+      let(:permission) { Permission.create(name: 'view', description: 'View permission') }
+
+      before do
+        role = Role[role_id]
+        role.add_permission(permission)
+      end
+
+      it 'returns all permissions for the role' do
+        get "/api/v1/roles/#{role_id}/permissions"
+        expect(last_response.status).to eq(200)
+        expect(json_response['data'].length).to eq(1)
+        expect(json_response['data'].first['name']).to eq('view')
+      end
+    end
+
+    context 'when the role does not exist' do
+      it 'returns 404' do
+        get '/api/v1/roles/999999/permissions'
+        expect(last_response.status).to eq(404)
+      end
+    end
+  end
+
+  describe 'POST /api/v1/roles/:id/permissions/:permission_id' do
+    context 'when the role and permission exist' do
+      let(:role_id) { TEST_DB[:roles].insert(name: 'Role') }
+      let(:permission) { Permission.create(name: 'view', description: 'View permission') }
+
+      it 'adds the permission to the role' do
+        post "/api/v1/roles/#{role_id}/permissions/#{permission.id}"
+        expect(last_response.status).to eq(201)
+        expect(json_response['data']['name']).to eq('view')
+      end
+
+      it 'returns 409 if the permission is already added' do
+        role = Role[role_id]
+        role.add_permission(permission)
+        post "/api/v1/roles/#{role_id}/permissions/#{permission.id}"
+        expect(last_response.status).to eq(409)
+        expect(json_response['errors']['permission']).to eq('already exists')
+      end
+    end
+
+    context 'when the role does not exist' do
+      let(:permission) { Permission.create(name: 'view', description: 'View permission') }
+
+      it 'returns 404' do
+        post "/api/v1/roles/999999/permissions/#{permission.id}"
+        expect(last_response.status).to eq(404)
+      end
+    end
+
+    context 'when the permission does not exist' do
+      let(:role_id) { TEST_DB[:roles].insert(name: 'Role') }
+
+      it 'returns 404' do
+        post "/api/v1/roles/#{role_id}/permissions/999999"
+        expect(last_response.status).to eq(404)
+      end
+    end
+  end
+
+  describe 'DELETE /api/v1/roles/:id/permissions/:permission_id' do
+    context 'when the role and permission exist' do
+      let(:role_id) { TEST_DB[:roles].insert(name: 'Role') }
+      let(:permission) { Permission.create(name: 'view', description: 'View permission') }
+
+      before do
+        role = Role[role_id]
+        role.add_permission(permission)
+      end
+
+      it 'removes the permission from the role' do
+        delete "/api/v1/roles/#{role_id}/permissions/#{permission.id}"
+        expect(last_response.status).to eq(204)
+        expect(Role[role_id].permissions).not_to include(permission)
+      end
+
+      it 'returns 404 if the permission is not associated with the role' do
+        role = Role[role_id]
+        role.remove_permission(permission)
+        delete "/api/v1/roles/#{role_id}/permissions/#{permission.id}"
+        expect(last_response.status).to eq(404)
+        expect(json_response['errors']['permission']).to eq('not found')
+      end
+    end
+
+    context 'when the role does not exist' do
+      let(:permission) { Permission.create(name: 'view', description: 'View permission') }
+
+      it 'returns 404' do
+        delete "/api/v1/roles/999999/permissions/#{permission.id}"
+        expect(last_response.status).to eq(404)
+      end
+    end
+
+    context 'when the permission does not exist' do
+      let(:role_id) { TEST_DB[:roles].insert(name: 'Role') }
+
+      it 'returns 404' do
+        delete "/api/v1/roles/#{role_id}/permissions/999999"
         expect(last_response.status).to eq(404)
       end
     end

@@ -1,4 +1,3 @@
-# models/role.rb
 require 'sequel'
 
 class Role < Sequel::Model
@@ -10,8 +9,7 @@ class Role < Sequel::Model
     add_permission(permission) if permission && !permissions.include?(permission)
   end
 
-  def remove_permission(permission_name)
-    permission = Permission.find(name: permission_name)
+  def delete_permission(permission)
     remove_permission(permission) if permission && permissions.include?(permission)
   end
 end

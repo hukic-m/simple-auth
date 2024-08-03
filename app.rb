@@ -3,6 +3,7 @@ require_relative './lib/db'
 require_relative './routes/rodauth_routes'
 require_relative './routes/roles_routes'
 require_relative './routes/permissions_routes'
+require_relative './routes/account_routes'
 require_relative './models/account'
 require_relative './models/role'
 require_relative './models/permission'
@@ -28,6 +29,10 @@ class App < Roda
 
         r.on 'permissions' do
           r.run PermissionsRoutes
+        end
+
+        r.on 'accounts' do
+          r.run AccountRoutes
         end
       end
     end

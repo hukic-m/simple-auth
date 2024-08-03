@@ -1,6 +1,7 @@
 require_relative '../models/role'
 require_relative '../lib/rodauth_app'
 require_relative '../validations/new_role'
+require 'json'
 
 # Routes for managing roles in the application
 class RolesRoutes < Roda
@@ -11,45 +12,51 @@ class RolesRoutes < Roda
     rodauth.require_authentication
 
     r.is do
-      # route: GET /api/v1/roles
       r.get { handle_list_roles }
-      # route: POST /api/v1/roles
       r.post { handle_create_role }
     end
 
-    r.on Integer do |id|
-      role = Role[id]
+    r.on Integer do |role_id|
+      role = Role[role_id]
       unless role
         response.status = 404
         next { errors: { role: 'not found' } }
       end
 
       r.is do
-        # route: GET /api/v1/roles/:id
         r.get { handle_show_role(role) }
-        # route: PATCH /api/v1/roles/:id
         r.patch { handle_update_role(role) }
-        # route: DELETE /api/v1/roles/:id
         r.delete { handle_delete_role(role) }
+      end
+
+      r.on 'permissions' do
+        r.get { handle_list_role_permissions(role) }
+
+        r.on Integer do |permission_id|
+          permission = Permission[permission_id]
+          unless permission
+            response.status = 404
+            next { errors: { permission: 'not found' } }
+          end
+
+          r.is do
+            r.post { handle_add_permission(role, permission) }
+            r.delete { handle_remove_permission(role, permission) }
+          end
+        end
       end
     end
   end
 
   private
 
-  # Handles listing all roles
-  #
-  # @return [Hash] The list of roles
   def handle_list_roles
     roles = Role.all
     { data: roles.map(&:to_hash) }
   end
 
-  # Handles creating a new role
-  #
-  # @return [Hash] The created role or errors
   def handle_create_role
-    symbolized_params = JSON.parse(request.body.read, symbolize_names: true)
+    symbolized_params = parse_request_body
     contract = NewRole.new
     result = contract.call(symbolized_params[:role])
 
@@ -63,20 +70,12 @@ class RolesRoutes < Roda
     end
   end
 
-  # Handles showing a specific role
-  #
-  # @param role [Role] The role to show
-  # @return [Hash] The role data
   def handle_show_role(role)
     { data: role.to_hash }
   end
 
-  # Handles updating an existing role
-  #
-  # @param role [Role] The role to update
-  # @return [Hash] The updated role or errors
   def handle_update_role(role)
-    symbolized_params = JSON.parse(request.body.read, symbolize_names: true)[:role]
+    symbolized_params = parse_request_body[:role]
     contract = NewRole.new(operation: :update, current_role_id: role.id)
     current_params = role.values.merge(symbolized_params)
     result = contract.call(current_params)
@@ -91,10 +90,6 @@ class RolesRoutes < Roda
     end
   end
 
-  # Handles deleting a specific role
-  #
-  # @param role [Role] The role to delete
-  # @return [Hash] A success message or errors
   def handle_delete_role(role)
     if role.destroy
       response.status = 200
@@ -103,5 +98,39 @@ class RolesRoutes < Roda
       response.status = 422
       { errors: { message: 'Failed to delete role' } }
     end
+  end
+
+  def handle_list_role_permissions(role)
+    response.status = 200
+    { data: role.permissions.map(&:to_hash) }
+  end
+
+  def handle_add_permission(role, permission)
+    if role.permissions.include?(permission)
+      response.status = 409
+      { errors: { permission: 'already exists' } }
+    else
+      role.add_permission(permission)
+      response.status = 201
+      { data: permission.to_hash }
+    end
+  end
+
+  def handle_remove_permission(role, permission)
+    if role.permissions.include?(permission)
+      role.remove_permission(permission)
+      response.status = 204
+      {}
+    else
+      response.status = 404
+      { errors: { permission: 'not found' } }
+    end
+  end
+
+  def parse_request_body
+    JSON.parse(request.body.read, symbolize_names: true)
+  rescue JSON::ParserError
+    response.status = 400
+    halt({ errors: { request: 'invalid JSON' } })
   end
 end

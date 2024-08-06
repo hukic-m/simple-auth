@@ -2,9 +2,7 @@ require 'rodauth/migrations'
 
 Sequel.migration do
   up do
-    if database_type == :postgres
-      run 'CREATE EXTENSION IF NOT EXISTS citext'
-    end
+    run 'CREATE EXTENSION IF NOT EXISTS citext' if database_type == :postgres
 
     extension :date_arithmetic
 
@@ -234,6 +232,27 @@ Sequel.migration do
       run "GRANT SELECT (id) ON account_password_hashes TO #{user}"
       run "GRANT INSERT, UPDATE, DELETE ON account_previous_password_hashes TO #{user}"
       run "GRANT SELECT (id, account_id) ON account_previous_password_hashes TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_statuses TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON accounts TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_authentication_audit_logs TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_password_reset_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_jwt_refresh_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_verification_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_login_change_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_remember_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_login_failures TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_email_auth_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_lockouts TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_password_change_times TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_activity_times TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_session_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_active_session_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_webauthn_user_ids TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_webauthn_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_otp_keys TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_otp_unlocks TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_recovery_codes TO #{user}"
+      run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_sms_codes TO #{user}"
     when :mssql
       user = get(Sequel.function(:DB_NAME))
       run "GRANT EXECUTE ON rodauth_get_salt TO #{user}"
@@ -244,15 +263,6 @@ Sequel.migration do
       run "GRANT EXECUTE ON rodauth_previous_password_hash_match TO #{user}"
       run "GRANT INSERT, UPDATE, DELETE ON account_previous_password_hashes TO #{user}"
       run "GRANT SELECT ON account_previous_password_hashes(id, account_id) TO #{user}"
-    when :postgres
-      user = get(Sequel.lit('current_user')) + '_password'
-      run "GRANT REFERENCES ON accounts TO #{user}"
-    when :mysql, :mssql
-      user = if database_type == :mysql
-               get(Sequel.lit('current_user')).sub(/_password@/, '@')
-             else
-               get(Sequel.function(:DB_NAME))
-             end
       run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_statuses TO #{user}"
       run "GRANT SELECT, INSERT, UPDATE, DELETE ON accounts TO #{user}"
       run "GRANT SELECT, INSERT, UPDATE, DELETE ON account_authentication_audit_logs TO #{user}"

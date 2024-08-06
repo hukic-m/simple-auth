@@ -19,3 +19,10 @@ Metrics/BlockLength:
 
 Metrics/AbcSize:
   Enabled: false
+
+# Convention LineLength limit
+Metrics/LineLength:
+  Max: 160
+
+Layout/LineLength:
+  Max: 160

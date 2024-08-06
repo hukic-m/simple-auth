@@ -1,16 +1,16 @@
 require 'roda'
 require 'sequel'
-require_relative '../models/permission'
-require_relative '../models/role'
-require_relative '../lib/rodauth_app'
-require_relative '../validations/new_permission'
+require_relative '../../models/permission'
+require_relative '../../models/role'
+require_relative '../../lib/rodauth_app'
+require_relative '../../validations/new_permission'
 
-class PermissionsRoutes < Roda
+class SimpleAuth
   plugin :rodauth, json: true, auth_class: RodauthApp
   plugin :all_verbs
   plugin :halt
 
-  route do |r|
+  hash_branch '/v1', 'permissions' do |r|
     # Ensure the user is authenticated
     rodauth.require_authentication
 

@@ -36,9 +36,7 @@ class NewRole < Dry::Validation::Contract
       current_role = Role.where(id: current_role_id).first
 
       # Check if the name has changed and ensure the new name is unique
-      if value != current_role.name && Role.where(name: value).exclude(id: current_role_id).count.positive?
-        key.failure('must be unique')
-      end
+      key.failure('must be unique') if value != current_role.name && Role.where(name: value).exclude(id: current_role_id).count.positive?
     else
       # For create operation, ensure the name is unique
       key.failure('must be unique') unless Role.where(name: value).empty?

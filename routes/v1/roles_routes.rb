@@ -1,14 +1,14 @@
-require_relative '../models/role'
-require_relative '../lib/rodauth_app'
-require_relative '../validations/new_role'
+require_relative '../../models/role'
+require_relative '../../lib/rodauth_app'
+require_relative '../../validations/new_role'
 require 'json'
 
 # Routes for managing roles in the application
-class RolesRoutes < Roda
+class SimpleAuth
   plugin :rodauth, json: true, auth_class: RodauthApp
   plugin :all_verbs
 
-  route do |r|
+  hash_branch '/v1', 'roles' do |r|
     rodauth.require_authentication
 
     r.is do

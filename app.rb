@@ -14,22 +14,6 @@ class SimpleAuth < Roda
   plugin :route_csrf
   plugin :hash_branch_view_subdir
 
-  plugin :error_handler do |e|
-    case e
-    when Roda::RodaPlugins::RouteCsrf::InvalidToken
-      @page_title = 'Invalid Security Token'
-      response.status = 400
-      view(content: '<p>An invalid security token was submitted with this request, and this request could not be processed.</p>')
-    else
-      $stderr.print "#{e.class}: #{e.message}\n"
-      warn e.backtrace
-      next exception_page(e, assets: true) if ENV['RACK_ENV'] == 'development'
-
-      @page_title = 'Internal Server Error'
-      view(content: '')
-    end
-  end
-
   Dir['./routes/**/*.rb'].each do |route_file|
     require_relative route_file.delete_suffix('.rb')
   end

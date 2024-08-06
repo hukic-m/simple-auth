@@ -12,9 +12,7 @@ class NewPermission < Dry::Validation::Contract
 
       current_permission = Permission.where(id: permission_id).first
 
-      if value != current_permission.name && Permission.where(name: value).exclude(id: permission_id).count.positive?
-        key.failure('must be unique')
-      end
+      key.failure('must be unique') if value != current_permission.name && Permission.where(name: value).exclude(id: permission_id).count.positive?
     else
       key.failure('must be unique') unless Permission.where(name: value).empty?
     end

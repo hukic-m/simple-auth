@@ -1,41 +1,41 @@
-require 'roda'
-require_relative './lib/db'
-require_relative './routes/rodauth_routes'
-require_relative './routes/roles_routes'
-require_relative './routes/permissions_routes'
-require_relative './routes/account_routes'
-require_relative './models/account'
-require_relative './models/role'
-require_relative './models/permission'
-require 'rake'
 require 'dotenv'
+require 'roda'
 Dotenv.load
+require_relative './lib/db'
+require_relative './models'
+require 'rake'
 
-class App < Roda
+class SimpleAuth < Roda
   plugin :json
   plugin :route_list
+  plugin :default_headers,
+         'Content-Type' => 'application/json',
+         'X-Content-Type-Options' => 'nosniff'
+  plugin :route_csrf
+  plugin :hash_branch_view_subdir
+
+  plugin :error_handler do |e|
+    case e
+    when Roda::RodaPlugins::RouteCsrf::InvalidToken
+      @page_title = 'Invalid Security Token'
+      response.status = 400
+      view(content: '<p>An invalid security token was submitted with this request, and this request could not be processed.</p>')
+    else
+      $stderr.print "#{e.class}: #{e.message}\n"
+      warn e.backtrace
+      next exception_page(e, assets: true) if ENV['RACK_ENV'] == 'development'
+
+      @page_title = 'Internal Server Error'
+      view(content: '')
+    end
+  end
+
+  Dir['./routes/**/*.rb'].each do |route_file|
+    require_relative route_file.delete_suffix('.rb')
+  end
 
   route do |r|
-    # route: GET /auth
-    r.on 'auth' do
-      r.run RodauthRoutes
-    end
-
-    r.on 'api' do
-      r.on 'v1' do
-        r.on 'roles' do
-          r.run RolesRoutes
-        end
-
-        r.on 'permissions' do
-          r.run PermissionsRoutes
-        end
-
-        r.on 'accounts' do
-          r.run AccountRoutes
-        end
-      end
-    end
+    r.hash_branches
 
     r.root do
       { message: 'Welcome to simple-auth' }

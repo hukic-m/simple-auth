@@ -1,13 +1,13 @@
-require_relative '../models/account'
-require_relative '../lib/rodauth_app'
+require_relative '../../models/account'
+require_relative '../../lib/rodauth_app'
 require 'json'
 
-class AccountRoutes < Roda
+class SimpleAuth
   plugin :rodauth, json: true, auth_class: RodauthApp
   plugin :all_verbs
   plugin :halt
 
-  route do |r|
+  hash_branch '/v1', 'accounts' do |r|
     rodauth.require_authentication
 
     # GET /accounts

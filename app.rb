@@ -1,36 +1,25 @@
-require 'roda'
-require_relative './lib/db'
-require_relative './routes/rodauth_routes'
-require_relative './routes/roles_routes'
-require_relative './routes/permissions_routes'
-require_relative './models/account'
-require_relative './models/role'
-require_relative './models/permission'
-require 'rake'
 require 'dotenv'
+require 'roda'
 Dotenv.load
+require_relative './lib/db'
+require_relative './models'
+require 'rake'
 
-class App < Roda
+class SimpleAuth < Roda
   plugin :json
   plugin :route_list
+  plugin :default_headers,
+         'Content-Type' => 'application/json',
+         'X-Content-Type-Options' => 'nosniff'
+  plugin :route_csrf
+  plugin :hash_branch_view_subdir
+
+  Dir['./routes/**/*.rb'].each do |route_file|
+    require_relative route_file.delete_suffix('.rb')
+  end
 
   route do |r|
-    # route: GET /auth
-    r.on 'auth' do
-      r.run RodauthRoutes
-    end
-
-    r.on 'api' do
-      r.on 'v1' do
-        r.on 'roles' do
-          r.run RolesRoutes
-        end
-
-        r.on 'permissions' do
-          r.run PermissionsRoutes
-        end
-      end
-    end
+    r.hash_branches
 
     r.root do
       { message: 'Welcome to simple-auth' }

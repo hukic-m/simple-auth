@@ -14,16 +14,13 @@ RSpec.describe 'Permissions routes' do
   let(:json_headers) { { 'CONTENT_TYPE' => 'application/json' } }
 
   before do
+    # Mock authentication and role requirements
     allow_any_instance_of(RodauthApp).to receive(:require_authentication).and_return(true)
+    allow_any_instance_of(RodauthApp).to receive(:require_role).and_return(true)
   end
 
   let(:valid_params) { { 'permission' => { 'name' => 'Test Permission', 'description' => 'A test permission' } } }
   let(:invalid_params) { { 'permission' => { 'name' => '', 'description' => 'Invalid permission' } } }
-
-  before do
-    # Mock authentication
-    allow_any_instance_of(RodauthApp).to receive(:require_authentication).and_return(true)
-  end
 
   # Custom method to convert hash keys to strings
   def stringify_keys(hash)
@@ -48,7 +45,7 @@ RSpec.describe 'Permissions routes' do
     context 'with valid parameters' do
       it 'creates a new permission' do
         expect do
-          post '/v1/permissions', valid_params
+          post '/v1/permissions', valid_params.to_json, json_headers
         end.to change(Permission, :count).by(1)
 
         expect(last_response.status).to eq(200)
@@ -58,7 +55,7 @@ RSpec.describe 'Permissions routes' do
 
     context 'with invalid parameters' do
       it 'returns validation errors' do
-        post '/v1/permissions', invalid_params
+        post '/v1/permissions', invalid_params.to_json, json_headers
 
         expect(last_response.status).to eq(422)
         expect(JSON.parse(last_response.body)).to have_key('errors')
@@ -90,7 +87,7 @@ RSpec.describe 'Permissions routes' do
     context 'with valid parameters' do
       it 'updates the permission' do
         patch "/v1/permissions/#{permission.id}",
-              { 'permission' => { 'name' => 'Updated Permission', 'description' => permission.description } }
+              { 'permission' => { 'name' => 'Updated Permission', 'description' => permission.description } }.to_json, json_headers
 
         expect(last_response.status).to eq(200)
         expect(JSON.parse(last_response.body)['name']).to eq('Updated Permission')
@@ -99,7 +96,7 @@ RSpec.describe 'Permissions routes' do
 
     context 'with invalid parameters' do
       it 'returns validation errors' do
-        patch "/v1/permissions/#{permission.id}", { 'permission' => { 'name' => '' } }
+        patch "/v1/permissions/#{permission.id}", { 'permission' => { 'name' => '' } }.to_json, json_headers
 
         expect(last_response.status).to eq(422)
         expect(JSON.parse(last_response.body)).to have_key('errors')

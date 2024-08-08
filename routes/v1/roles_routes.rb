@@ -10,6 +10,7 @@ class SimpleAuth
 
   hash_branch '/v1', 'roles' do |r|
     rodauth.require_authentication
+    rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
 
     r.is do
       r.get { handle_list_roles }

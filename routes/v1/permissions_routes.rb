@@ -13,6 +13,7 @@ class SimpleAuth
   hash_branch '/v1', 'permissions' do |r|
     # Ensure the user is authenticated
     rodauth.require_authentication
+    rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
 
     # GET /permissions
     r.is do

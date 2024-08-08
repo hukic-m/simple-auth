@@ -1,4 +1,3 @@
-require_relative '../../models/account'
 require_relative '../../lib/rodauth_app'
 require 'json'
 
@@ -12,6 +11,8 @@ class SimpleAuth
 
     # GET /accounts
     r.is do
+      rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
+
       r.get do
         accounts = Account.all
         accounts.map(&:to_hash)
@@ -19,6 +20,8 @@ class SimpleAuth
     end
 
     r.on Integer do |id|
+      rodauth.account_middleware
+
       account = Account[id]
 
       # Ensure the account exists
@@ -41,6 +44,7 @@ class SimpleAuth
 
         # DELETE /accounts/:id
         r.delete do
+          rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
           account.destroy
           response.status = 204
           {}

@@ -1,4 +1,3 @@
-require 'byebug'
 class SimpleAuth
   plugin :all_verbs
   plugin :halt

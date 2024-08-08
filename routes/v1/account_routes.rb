@@ -1,8 +1,5 @@
-require_relative '../../lib/rodauth_app'
-require 'json'
-
+require 'byebug'
 class SimpleAuth
-  plugin :rodauth, json: true, auth_class: RodauthApp
   plugin :all_verbs
   plugin :halt
 
@@ -48,6 +45,22 @@ class SimpleAuth
           account.destroy
           response.status = 204
           {}
+        end
+      end
+
+      # POST /accounts/:id/assign_role
+      r.post 'assign_role' do
+        rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
+
+        body = JSON.parse(request.body.read, symbolize_names: true)
+
+        role_name = body[:role][:name]
+        if role_name && account.assign_role(role_name)
+          response.status = 200
+          { message: "Role '#{role_name}' assigned to account." }
+        else
+          response.status = 404
+          { error: "Role '#{role_name}' not found." }
         end
       end
     end

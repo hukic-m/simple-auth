@@ -1,4 +1,5 @@
 require 'rodauth'
+require_relative './auth_helpers'
 
 class RodauthApp < Rodauth::Auth
   configure do
@@ -18,6 +19,10 @@ class RodauthApp < Rodauth::Auth
                         'permissions' => acc.permissions
                       })
       end
+    end
+
+    auth_class_eval do
+      include AuthHelpers
     end
   end
 end

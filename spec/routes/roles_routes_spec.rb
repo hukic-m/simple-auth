@@ -14,7 +14,9 @@ RSpec.describe 'Roles routes' do
   let(:json_headers) { { 'CONTENT_TYPE' => 'application/json' } }
 
   before do
+    # Mock authentication and role requirements
     allow_any_instance_of(RodauthApp).to receive(:require_authentication).and_return(true)
+    allow_any_instance_of(RodauthApp).to receive(:require_role).and_return(true)
   end
 
   before(:each) do

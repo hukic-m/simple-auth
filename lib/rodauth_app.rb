@@ -12,7 +12,7 @@ class RodauthApp < Rodauth::Auth
     jwt_decode_opts({ verify_expiration: true })
 
     jwt_session_hash do
-      if account && account_id && account.authenticated?
+      if account && account_id && authenticated?
         acc = Account[account_id]
         super().merge({
                         'roles' => acc.roles.map(&:name),

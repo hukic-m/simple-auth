@@ -4,6 +4,7 @@ Dotenv.load
 require_relative './lib/db'
 require_relative './models'
 require 'rake'
+require 'logger'
 
 class SimpleAuth < Roda
   plugin :json
@@ -18,11 +19,14 @@ class SimpleAuth < Roda
     require_relative route_file.delete_suffix('.rb')
   end
 
+  logger = Logger.new($stdout)
+  logger.level = Logger::WARN
+
   route do |r|
     r.hash_branches
 
     r.root do
-      { message: 'Welcome to simple-auth' }
+      { message: 'All systems operational' }
     end
   end
 end

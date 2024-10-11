@@ -5,7 +5,7 @@ class SimpleAuth
   hash_branch '/v1', 'accounts' do |r|
     rodauth.require_authentication
 
-    # GET /accounts
+    # GET /v1/accounts
     r.is do
       rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
 
@@ -15,21 +15,24 @@ class SimpleAuth
       end
     end
 
-    r.on Integer do |id|
+    r.on String do |id_or_email|
       rodauth.account_middleware
 
-      account = Account[id]
+      account = if id_or_email =~ /^\d+$/
+                  Account[id_or_email.to_i]
+                else
+                  Account.find_by(email: id_or_email)
+                end
 
-      # Ensure the account exists
       r.halt(404, { error: 'Account not found' }.to_json) unless account
 
       r.is do
-        # GET /accounts/:id
+        # GET /accounts/:id_or_email
         r.get do
           account.to_hash
         end
 
-        # PATCH /accounts/:id
+        # PATCH /accounts/:id_or_email
         r.patch do
           body = JSON.parse(request.body.read, symbolize_names: true)
           account.update(account.to_hash.except(:id).merge(body[:account]))
@@ -38,7 +41,7 @@ class SimpleAuth
           { data: account.to_hash }
         end
 
-        # DELETE /accounts/:id
+        # DELETE /accounts/:id_or_email
         r.delete do
           rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
           account.destroy
@@ -47,7 +50,7 @@ class SimpleAuth
         end
       end
 
-      # POST /accounts/:id/assign_role
+      # POST /accounts/:id_or_email/assign_role
       r.post 'assign_role' do
         rodauth.require_role(ENV['ROLE_ADMIN'].split(','))
 

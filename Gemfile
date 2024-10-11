@@ -21,6 +21,7 @@ gem 'tilt'
 group :development do
   gem 'annotate'
   gem 'byebug'
+  gem 'rerun'
   gem 'rubocop'
 end
 

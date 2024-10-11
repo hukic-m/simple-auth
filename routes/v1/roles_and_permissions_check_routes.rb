@@ -39,7 +39,7 @@ class SimpleAuth
     r.post 'check_role' do
       rodauth.require_authentication
 
-      required_roles = parse_request_body(r, 'roles')
+      required_roles = request_body_data(r, 'roles')
 
       if required_roles
         return { verified: true } if rodauth.require_role(required_roles)
@@ -52,7 +52,7 @@ class SimpleAuth
     r.post 'check_permission' do
       rodauth.require_authentication
 
-      required_permissions = parse_request_body(r, 'permissions')
+      required_permissions = request_body_data(r, 'permissions')
 
       if required_permissions
         return { verified: true } if rodauth.require_permission(required_permissions)
@@ -72,7 +72,7 @@ class SimpleAuth
   # @param key [String] the key to extract from the JSON body
   # @return [Array] the extracted values or nil if the JSON is invalid
   #
-  def parse_request_body(request, key)
+  def request_body_data(request, key)
     request_data = JSON.parse(request.body.read)
     request_data[key] || []
   rescue JSON::ParserError

@@ -32,10 +32,7 @@ module AuthHelpers
   #
   # @return [Boolean] true if the user is accessing their own account or is an admin, otherwise denies access.
   def account_middleware
-    account_id_in_path = request.path_info[%r{/accounts/(\d+)}, 1].to_i
-    return true if account_id_in_path == @jwt_payload['account_id']
-
-    return true if require_role(ENV['ROLE_ADMIN'].split(','))
+    return true if user_own_account? || user_admin?
 
     deny_access
   end
@@ -49,5 +46,17 @@ module AuthHelpers
     response.status = 403
     response.write({ error: 'Forbidden' }.to_json)
     request.halt
+  end
+
+  def user_own_account?
+    @jwt_payload['account_id'] == current_user_account_id
+  end
+
+  def user_admin?
+    @jwt_payload['roles'].include?('admin')
+  end
+
+  def current_user_account_id
+    @jwt_payload['account_id']
   end
 end

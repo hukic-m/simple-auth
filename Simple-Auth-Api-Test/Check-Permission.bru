@@ -1,0 +1,21 @@
+meta {
+  name: Check-Permission
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{localhost}}/v1/roles-permissions/check_permission
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3Mjg2NjI1OTIsImlhdCI6MTcyODY2MDc5MiwibmJmIjoxNzI4NjYwNzg3LCJhY2NvdW50X2lkIjoyLCJhY3RpdmVfc2Vzc2lvbl9pZCI6ImliQzhrQXZhUEtsR281STVlbUVkbEhVQ0xIQ3I1czlTTWpoZ2VleTNlR28iLCJhdXRoZW50aWNhdGVkX2J5IjpbInBhc3N3b3JkIl0sInJvbGVzIjpbImFkbWluIl0sInBlcm1pc3Npb25zIjpbImFkbWluOndyaXRlIl19.MNJQ6eM9YokQwnGZB9tUPZK-8XT6aLrK-IsJENUO5mI
+}
+
+body:json {
+  {
+    "permissions": ["admin:write"]
+  }
+}

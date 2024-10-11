@@ -1,0 +1,15 @@
+meta {
+  name: Get-all-accounts
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{localhost}}/v1/accounts
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3Mjc5NjkxNjgsImlhdCI6MTcyNzk2NzM2OCwibmJmIjoxNzI3OTY3MzYzLCJhY2NvdW50X2lkIjoyLCJhY3RpdmVfc2Vzc2lvbl9pZCI6Ik9GcEJFNUpNNEZCYUw1eWxCV0xjRnBNcW4wVVJBSzdYMDk5cEZseUxWRGciLCJhdXRoZW50aWNhdGVkX2J5IjpbImF1dG9sb2dpbiJdLCJhdXRvbG9naW5fdHlwZSI6ImNyZWF0ZV9hY2NvdW50Iiwicm9sZXMiOltdLCJwZXJtaXNzaW9ucyI6W119.wFYNtMuIpcSRTf5pvSWVHY6wH3HQ8WJrw49sOYHResw
+}
